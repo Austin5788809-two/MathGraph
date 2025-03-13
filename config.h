@@ -7,30 +7,30 @@
 #include <vector>
 #include <unordered_map>
 #include <optional>
+#include <thread>
+#include <mutex>
+#include <sstream>
 
 namespace sf{
 typedef sf::Vector2<double> Vector2d;
 }
 extern sf::RenderWindow window;
-extern int windowWidth;
-extern int windowHeight;
+extern unsigned int windowWidth;
+extern unsigned int windowHeight;
 struct point
 {
-    static int id_cnt;
-    int id;
+    std::string name;
     sf::Vector2d position;
     sf::Color color; // random color
-    point() : id(id_cnt++) {}
 };
-extern int point::id_cnt = 0;
-std::unordered_map<int, point*> points;
+extern std::unordered_map<std::string, point*> points;
 struct line
 {
     static int id_cnt;
     int id;
-    int id_p1, id_p2;
+    point* p1;
+    point* p2;
     sf::Color color; // random color
     line() : id(id_cnt++) {}
 };
-extern int line::id_cnt = 0;
-std::unordered_map<int, line*> lines;
+extern std::unordered_map<int, line*> lines;

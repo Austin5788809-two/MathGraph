@@ -1,6 +1,7 @@
 #include "config.h"
 
-sf::RenderWindow window(sf::VideoMode({windowWidth, windowHeight}), "SFML works!");
+sf::RenderWindow window(sf::VideoMode({800u, 600u}), "SFML works!", sf::Style::Default, sf::ContextSettings{0, 0, 0, 2, 0, 0, 0});
+
 unsigned int windowWidth = 800;
 unsigned int windowHeight = 600;
 int line::id_cnt = 0;
@@ -60,6 +61,27 @@ void cmd_thread()
                 p->color = sf::Color(rand() % 256, rand() % 256, rand() % 256);
                 points[p->name] = p;
                 std::cout << "point " << arg << " added" << std::endl;
+            }
+            if (arg == "line")
+            { // no name
+                std::string p1, p2;
+                cmd >> p1 >> p2; // point1 point2
+                if (points.find(p1) == points.end())
+                {
+                    std::cout << "point " << p1 << " not found" << std::endl;
+                    continue;
+                }
+                if (points.find(p2) == points.end())
+                {
+                    std::cout << "point " << p2 << " not found" << std::endl;
+                    continue;
+                }
+                line *l = new line;
+                l->p1 = points[p1];
+                l->p2 = points[p2];
+                l->color = sf::Color(rand() % 256, rand() % 256, rand() % 256);
+                lines[l->id] = l;
+                std::cout << "line " << l->id << " added" << std::endl;
             }
         }
     }

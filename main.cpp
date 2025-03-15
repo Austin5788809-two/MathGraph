@@ -7,11 +7,11 @@ unsigned int windowHeight = 600;
 int line::id_cnt = 0;
 std::unordered_map<std::string, point*> points;
 std::unordered_map<int, line*> lines;
+std::mutex dataMutex;
 
 void cmd_thread()
 { // 通过命令增减对象
     system("cls");
-    int point_name_cnt = 0; // for unnamed points
     while (true)
     {
         std::cout << " >>> ";
@@ -23,7 +23,6 @@ void cmd_thread()
         std::queue<std::string> args;
         while (cmd >> tmp)
             args.push(tmp);
-        std::cout << "cmd length : " << args.size() + 1 << std::endl;
         if (op == "exit")
             return;
         else if (op == "add")
@@ -33,7 +32,12 @@ void cmd_thread()
             if (args.front() == "point")
             {
                 args.pop();
-                std::string name = args.empty() ? std::string("unnamed point ") + std::to_string(point_name_cnt++) : args.front(); args.pop();
+                if (args.empty())
+                {
+                    std::cout << "Error: missing point name\n";
+                    continue;
+                }
+                std::string name = args.front(); args.pop();
                 sf::Vector2d position;
                 if (args.empty())
                     position = {0.0, 0.0};
@@ -74,13 +78,30 @@ int main()
         while (window.pollEvent(event))
             if (event.type == sf::Event::Closed)
                 window.close();
+        
         window.clear();
+        {
+            std::lock_guard<std::mutex> lock(dataMutex);
+            for (const auto& pair : points)
+                pair.second->draw();
+        }
+        {
+            std::lock_guard<std::mutex> lock(dataMutex);
+            for (const auto& pair : lines)
+                pair.second->draw();
+        }
         window.display();
     }
     cmd.wait();
-    for (auto &p : points)
-        delete p.second;
-    for (auto &l : lines)
-        delete l.second;
+    
+    // 清理资源
+    {
+        std::lock_guard<std::mutex> lock(dataMutex);
+        for (auto &p : points)
+            delete p.second;
+        for (auto &l : lines)
+            delete l.second;
+    }
+    
     return 0;
 }

@@ -8,6 +8,8 @@
         "thread": "cpp",
         "utility": "cpp",
         "xhash": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "cmath": "cpp",
+        "mutex": "cpp"
     }
 }

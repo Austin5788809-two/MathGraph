@@ -5,6 +5,9 @@
         "keywords": "plaintext",
         "testcode": "plaintext",
         "unordered_map": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "utility": "cpp",
+        "xhash": "cpp",
+        "queue": "cpp"
     }
 }

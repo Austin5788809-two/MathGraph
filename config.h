@@ -10,6 +10,8 @@
 #include <thread>
 #include <mutex>
 #include <sstream>
+#include <cmath>
+#include <queue>
 
 namespace sf{
 typedef sf::Vector2<double> Vector2d;

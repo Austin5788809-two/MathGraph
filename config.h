@@ -58,3 +58,7 @@ struct line
     }
 };
 extern std::unordered_map<int, line*> lines;
+
+
+#define protect_start {std::lock_guard<std::mutex> lock(dataMutex);
+#define protect_end }

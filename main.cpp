@@ -8,11 +8,11 @@ int line::id_cnt = 0;
 std::unordered_map<std::string, point*> points;
 std::unordered_map<int, line*> lines;
 std::mutex dataMutex;
-
+bool is_window_close = false;
 void cmd_thread()
 { // 通过命令增减对象
     system("cls");
-    while (true)
+    while (!is_window_close)
     {
         std::cout << " >>> ";
         std::string tmp;
@@ -79,29 +79,30 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         
-        window.clear();
-        {
-            std::lock_guard<std::mutex> lock(dataMutex);
+        window.clear(sf::Color{245, 245, 220});
+        protect_start
             for (const auto& pair : points)
                 pair.second->draw();
-        }
-        {
-            std::lock_guard<std::mutex> lock(dataMutex);
+        protect_end
+        protect_start
             for (const auto& pair : lines)
                 pair.second->draw();
-        }
+        protect_end
         window.display();
     }
+    std::cout << "window closed!\n";
+    protect_start
+        is_window_close = true;
+    protect_end
     cmd.wait();
     
     // 清理资源
-    {
-        std::lock_guard<std::mutex> lock(dataMutex);
+    protect_start
         for (auto &p : points)
             delete p.second;
         for (auto &l : lines)
             delete l.second;
-    }
+    protect_end
     
     return 0;
 }

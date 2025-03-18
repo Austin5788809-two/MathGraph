@@ -1,4 +1,6 @@
 #include "config.h"
+#include "point.hpp"
+#include "line.hpp"
 
 sf::RenderWindow window(sf::VideoMode(800u, 600u), "SFML works!", sf::Style::Default);
 
@@ -8,11 +10,12 @@ int line::id_cnt = 0;
 std::unordered_map<std::string, point*> points;
 std::unordered_map<int, line*> lines;
 std::mutex dataMutex;
-bool is_window_close = false;
+CAMERA camera{0, 0, 0};
+
 void cmd_thread()
 { // 通过命令增减对象
     system("cls");
-    while (!is_window_close)
+    while (1)
     {
         std::cout << " >>> ";
         std::string tmp;
@@ -76,24 +79,27 @@ int main()
     {
         sf::Event event;
         while (window.pollEvent(event))
+        {
             if (event.type == sf::Event::Closed)
                 window.close();
-        
+        }
+        protect_start
+        for (const auto& i : points)
+            i.second->update();
+        protect_end
+
         window.clear(sf::Color{245, 245, 220});
         protect_start
-            for (const auto& pair : points)
-                pair.second->draw();
+            for (const auto& i : points)
+                i.second->draw();
         protect_end
         protect_start
-            for (const auto& pair : lines)
-                pair.second->draw();
+            for (const auto& i : lines)
+                i.second->draw();
         protect_end
         window.display();
     }
     std::cout << "window closed!\n";
-    protect_start
-        is_window_close = true;
-    protect_end
     cmd.wait();
     
     // 清理资源
